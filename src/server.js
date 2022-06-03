@@ -10,17 +10,13 @@ class Server extends Router {
 
   CURRENT_HEADER = {};
 
-  constructor (router = null) {
+  constructor () {
     super();
     
     this.server = http.createServer((request, response) => {
       const { url, method } = request;
 
       response.writeHead(200, this.CURRENT_HEADER);
-
-      if (router) {
-        this.setRoutes(router);
-      }
 
       const chosenRoute = this[method][url];
 
