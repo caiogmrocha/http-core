@@ -1,47 +1,10 @@
-const http = require('http');
-const Router = require('./router');
+const Server = require('./server');
+const routes = require('./routes');
 
-class App extends Router {
-  static DEFAULT_HEADERS = {
-    API_HEADER: {
-      'Content-Type': 'application/json',
-    },
-  };
+const server = new Server();
+const { API_HEADER } = Server.DEFAULT_HEADERS;
 
-  CURRENT_HEADER = {};
+server.setHeader(API_HEADER);
+server.setRoutes(routes);
 
-  constructor (router = null) {
-    super();
-    
-    this.server = http.createServer((request, response) => {
-      const { url, method } = request;
-
-      response.writeHead(200, this.CURRENT_HEADER);
-
-      if (router) {
-        this.setRoutes(router);
-      }
-
-      const chosenRoute = this[method][url];
-
-      return chosenRoute(request, response);
-    });
-  }
-
-  listen(port, callback) {
-    this.server.listen(port, callback);
-  }
-
-  setHeader(headerConfig) {
-    this.CURRENT_HEADER = headerConfig;
-  }
-
-  setRoutes(router = null) {
-    this.GET = router.GET;
-    this.POST = router.POST;
-    this.PUT = router.PUT;
-    this.DELETE = router.DELETE;
-  }
-}
-
-module.exports = App;
+server.listen(3333, () => console.log('Server is running at http://localhost:3333'));
