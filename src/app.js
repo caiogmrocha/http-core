@@ -1,6 +1,7 @@
 const http = require('http');
+const Router = require('./router');
 
-class App {
+class App extends Router {
   static DEFAULT_HEADERS = {
     API_HEADER: {
       'Content-Type': 'application/json',
@@ -9,16 +10,17 @@ class App {
 
   CURRENT_HEADER = {};
 
-  GET = {};
-  POST = {};
-  PUT = {};
-  DELETE = {};
-
-  constructor () {
+  constructor (router = null) {
+    super();
+    
     this.server = http.createServer((request, response) => {
       const { url, method } = request;
 
       response.writeHead(200, this.CURRENT_HEADER);
+
+      if (router) {
+        this.setRoutes(router);
+      }
 
       const chosenRoute = this[method][url];
 
@@ -34,32 +36,11 @@ class App {
     this.CURRENT_HEADER = headerConfig;
   }
 
-  get(url, callback) {
-    this.GET = {
-      ...this.GET,
-      [url]: callback,
-    }
-  }
-
-  post(url, callback) {
-    this.POST = {
-      ...this.POST,
-      [url]: callback,
-    }
-  }
-
-  put(url, callback) {
-    this.PUT = {
-      ...this.PUT,
-      [url]: callback,
-    }
-  }
-
-  delete(url, callback) {
-    this.DELETE = {
-      ...this.DELETE,
-      [url]: callback,
-    }
+  setRoutes(router = null) {
+    this.GET = router.GET;
+    this.POST = router.POST;
+    this.PUT = router.PUT;
+    this.DELETE = router.DELETE;
   }
 }
 
