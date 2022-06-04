@@ -17,9 +17,9 @@ routes.get('/users/search', (request, response) => {
 routes.post('/users', (request, response) => {
   const { body, queries } = request;
 
-  return response.end(JSON.stringify({
+  return response.json({
     body
-  }));
+  });
 });
 
 module.exports = routes;

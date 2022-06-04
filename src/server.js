@@ -1,16 +1,9 @@
 const http = require('http');
 const Router = require('./router');
 const RequestAdapter = require('./request-adapter');
+const ResponseAdapter = require('./response-adapter');
 
 class Server extends Router {
-  static DEFAULT_HEADERS = {
-    API_HEADER: {
-      'Content-Type': 'application/json',
-    },
-  };
-
-  CURRENT_HEADER = {};
-
   constructor () {
     super();
     
@@ -22,13 +15,12 @@ class Server extends Router {
         url = url.split('?')[0];
       }
 
-      response.writeHead(200, this.CURRENT_HEADER);
-
       const chosenRoute = this[method][url];
 
       const requestAdapter = await RequestAdapter.create(request);
+      const responseAdapter = await ResponseAdapter.create(response);
 
-      return chosenRoute(requestAdapter, response);
+      return chosenRoute(requestAdapter, responseAdapter);
     });
   }
 
