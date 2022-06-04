@@ -1,5 +1,6 @@
 const http = require('http');
 const Router = require('./router');
+const RequestAdapter = require('./request-adapter');
 
 class Server extends Router {
   static DEFAULT_HEADERS = {
@@ -13,14 +14,21 @@ class Server extends Router {
   constructor () {
     super();
     
-    this.server = http.createServer((request, response) => {
-      const { url, method } = request;
+    this.server = http.createServer(async (request, response) => {
+      let { url, method } = request;
+
+      // Remove query params from url
+      if (url.indexOf('?')) {
+        url = url.split('?')[0];
+      }
 
       response.writeHead(200, this.CURRENT_HEADER);
 
       const chosenRoute = this[method][url];
 
-      return chosenRoute(request, response);
+      const requestAdapter = await RequestAdapter.create(request);
+
+      return chosenRoute(requestAdapter, response);
     });
   }
 
@@ -32,7 +40,7 @@ class Server extends Router {
     this.CURRENT_HEADER = headerConfig;
   }
 
-  setRoutes(router = null) {
+  setRoutes(router) {
     this.GET = router.GET;
     this.POST = router.POST;
     this.PUT = router.PUT;

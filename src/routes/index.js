@@ -8,9 +8,17 @@ routes.get('/users', (request, response) => {
   }));
 });
 
-routes.post('/users', (request, response) => {
+routes.get('/users/search', (request, response) => {
   return response.end(JSON.stringify({
-    message: 'Create Users',
+    message: 'Get All Users',
+  }));
+});
+
+routes.post('/users', (request, response) => {
+  const { body, queries } = request;
+
+  return response.end(JSON.stringify({
+    body
   }));
 });
 
